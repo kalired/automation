@@ -1,42 +1,31 @@
-# filters/cdp_parser.py
+{%- set neighbors = [] -%}
+{%- set neighbor = {} -%}
+{%- for line in cdp_output.stdout_lines -%}
+  {%- if line.startswith('Device ID:') -%}
+    {%- set _ = neighbor.update({'device_id': line.split('Device ID: ')[1].strip()}) -%}
+  {%- elif line.startswith('IP address:') -%}
+    {%- set _ = neighbor.update({'ip_address': line.split('IP address: ')[1].strip()}) -%}
+  {%- elif line.startswith('Platform:') -%}
+    {%- set _ = neighbor.update({'platform': line.split('Platform: ')[1].strip()}) -%}
+  {%- elif line.startswith('Interface:') -%}
+    {%- set _ = neighbor.update({'interface': line.split('Interface: ')[1].strip()}) -%}
+  {%- elif line.startswith('Port ID (outgoing port):') -%}
+    {%- set _ = neighbor.update({'port_id': line.split('Port ID (outgoing port): ')[1].strip()}) -%}
+    {%- set _ = neighbors.append(neighbor) -%}
+    {%- set neighbor = {} -%}
+  {%- endif -%}
+{%- endfor -%}
+{{ neighbors }}
 
-def parse_cdp_neighbors(cdp_output):
-    neighbors = []
-    lines = cdp_output.splitlines()
-    for line in lines:
-        if line.startswith('Device ID:'):
-            neighbor = {}
-            neighbor['device_id'] = line.split('Device ID: ')[1].strip()
-        elif line.startswith('IP address:'):
-            neighbor['ip_address'] = line.split('IP address: ')[1].strip()
-        elif line.startswith('Platform:'):
-            neighbor['platform'] = line.split('Platform: ')[1].strip()
-        elif line.startswith('Interface:'):
-            neighbor['interface'] = line.split('Interface: ')[1].strip()
-        elif line.startswith('Port ID (outgoing port):'):
-            neighbor['port_id'] = line.split('Port ID (outgoing port): ')[1].strip()
-            neighbors.append(neighbor)
-    return neighbors
 
-class FilterModule(object):
-    def filters(self):
-        return {
-            'parse_cdp_neighbors': parse_cdp_neighbors
-        }
+To use this Jinja2 template, you can either store it in a separate file with a .j2 extension or include it inline within your Ansible playbook.
 
-To use this filter, follow these steps:
-
-Create a new directory named filters in your Ansible playbook directory.
-Inside the filters directory, create a file named cdp_parser.py.
-Copy the above code into the cdp_parser.py file.
-In your playbook, ensure that you have the path to the filters directory specified in the filter_plugins configuration option. For example:
+Here's an example of how you can use the template within an Ansible playbook:
 
 ---
 - name: Search CDP Neighbors
   hosts: switches
   gather_facts: no
-  filter_plugins:
-    - ./filters
 
   tasks:
     - name: Show CDP neighbors
@@ -46,11 +35,15 @@ In your playbook, ensure that you have the path to the filters directory specifi
 
     - name: Parse CDP output
       set_fact:
-        cdp_neighbors: "{{ cdp_output.stdout[0] | parse_cdp_neighbors }}"
+        cdp_neighbors: "{{ cdp_output.stdout[0] | jinja2_template('cdp_parser.j2') | from_yaml }}"
 
     - name: Display CDP neighbors
       debug:
         var: cdp_neighbors
-Now, when you execute the playbook, the parse_cdp_neighbors filter will be available, and it will parse the CDP output into a structured format. The resulting cdp_neighbors variable will contain a list of dictionaries, each representing a CDP neighbor with details such as device ID, IP address, platform, interface, and port ID.
 
-Make sure to adjust the playbook and filter path as per your specific setup.
+
+In this example, the cdp_output.stdout[0] is passed through the jinja2_template filter, which applies the Jinja2 template to parse the CDP output. The resulting structured data is then transformed from YAML format back into a Python data structure using the from_yaml filter.
+
+Make sure the template file (cdp_parser.j2) is located in the same directory as your playbook or specify the correct path to the template file.
+
+Adjust the playbook and template as per your specific network setup and requirements.

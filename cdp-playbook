@@ -1,0 +1,31 @@
+---
+- name: Search CDP Neighbors
+  hosts: switches
+  gather_facts: no
+
+  tasks:
+    - name: Show CDP neighbors
+      ios_command:
+        commands: show cdp neighbors detail
+      register: cdp_output
+
+    - name: Parse CDP output
+      set_fact:
+        cdp_neighbors: "{{ cdp_output.stdout[0] | parse_cdp_neighbors }}"
+
+    - name: Display CDP neighbors
+      debug:
+        var: cdp_neighbors
+
+In this playbook:
+
+The hosts field specifies the group of switches defined in your inventory file that you want to target. Make sure you have the appropriate host entries and connectivity set up in your inventory file.
+The ios_command module is used to execute the show cdp neighbors detail command on each switch. Adjust the module name according to the network platform you are using (e.g., nxos_command for Cisco Nexus switches).
+The register keyword stores the command output in the cdp_output variable.
+The set_fact task uses a custom parse_cdp_neighbors filter (implemented as a Jinja2 filter) to parse the CDP output into a structured format. It converts the output into a list of dictionaries containing information about the CDP neighbors.
+The debug task is included to display the parsed CDP neighbors.
+Make sure you have Ansible installed and your inventory file properly configured with the necessary switch information. Adjust the playbook and inventory as per your specific network setup.
+
+
+
+

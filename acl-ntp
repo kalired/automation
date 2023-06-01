@@ -1,0 +1,2 @@
+access-list 100 deny udp any eq ntp any
+access-list 100 permit udp host 10.1.1.1 any eq ntp

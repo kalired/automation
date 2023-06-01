@@ -1,0 +1,33 @@
+from netmiko import ConnectHandler
+
+# Cisco switch details
+device = {
+    'device_type': 'cisco_ios',
+    'ip': '192.168.0.1',  # Replace with the IP of your Cisco switch
+    'username': 'your_username',
+    'password': 'your_password',
+    'secret': 'your_enable_secret',
+}
+
+# New syslog server IP address
+new_syslog_server = '10.1.1.1'
+
+# SSH connection to the switch
+net_connect = ConnectHandler(**device)
+net_connect.enable()
+
+# Enter configuration mode
+net_connect.config_mode()
+
+# Change syslog server IP address
+commands = ['no logging host', f'logging host {new_syslog_server}']
+output = net_connect.send_config_set(commands)
+
+# Exit configuration mode and save changes
+net_connect.exit_config_mode()
+net_connect.save_config()
+
+# Close SSH connection
+net_connect.disconnect()
+
+print("Syslog server changed successfully!")

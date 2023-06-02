@@ -1,0 +1,39 @@
+Here's an updated version of the PowerShell script that uses Event Viewer to search for event ID 55 in the "Applications and Services Logs/Microsoft/Windows/UniversalTelemetryClient/Operational" log and creates a text file that lists all the occurrences of event ID 55:
+
+
+
+
+
+
+$eventID = 55    # Event ID to search for
+$logName = "Applications and Services Logs/Microsoft/Windows/UniversalTelemetryClient/Operational"    # Log name to search
+$outputFile = "EventID55.txt"    # Output file name
+
+# Get the event log
+$eventLog = Get-WinEvent -LogName $logName -FilterXPath "*[System/EventID=$eventID]"
+
+# Create an empty string to store the event details
+$eventDetails = ""
+
+# Iterate through each event
+foreach ($event in $eventLog) {
+    $eventDetails += "TimeCreated: $($event.TimeCreated)`r`n"
+    $eventDetails += "ID: $($event.ID)`r`n"
+    $eventDetails += "Message: $($event.Message)`r`n"
+    $eventDetails += "----------------------`r`n"
+}
+
+# Save the event details to a text file
+$eventDetails | Out-File -FilePath $outputFile
+
+
+
+
+
+In this updated script, the $outputFile variable is set to the desired name of the text file where the event details will be stored. Replace "EventID55.txt" with the actual file name you want to use.
+
+The rest of the script remains the same as the previous version. It retrieves events from the specified log that match the given Event ID, iterates through each event, and concatenates the relevant details (timestamp, Event ID, and message) into a string variable.
+
+Finally, the event details are saved to the specified text file using the Out-File cmdlet.
+
+Save this script with a .ps1 file extension (e.g., search_eventID55.ps1) and execute it in a PowerShell environment by running .\search_eventID55.ps1. Make sure to adjust the Event ID, log name, and output file name according to your specific requirements.

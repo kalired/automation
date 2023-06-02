@@ -1,4 +1,4 @@
-Here's a PowerShell script that first checks if the directory "C:\temp" exists. If it doesn't exist, it creates the directory. Then it searches for Event ID 55 within the specified log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx" and creates both a text file and a CSV file with all the matches found:
+# Here's a PowerShell script that first checks if the directory "C:\temp" exists. If it doesn't exist, it creates the directory. Then it searches for Event ID 55 within the specified log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx" and creates both a text file and a CSV file with all the matches found:
 
 
 
@@ -51,16 +51,16 @@ Write-Host "Search complete. Results have been saved to $outputTextFile and $out
 
 
 
-In this script, we first check if the directory "C:\temp" exists using the Test-Path cmdlet. If it doesn't exist, we create it using the New-Item cmdlet.
+# In this script, we first check if the directory "C:\temp" exists using the Test-Path cmdlet. If it doesn't exist, we create it using the New-Item cmdlet.
 
-Next, we use the Get-WinEvent cmdlet with the -Path parameter to specify the log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx". We then filter the event logs to retrieve only the ones that have Event ID 55.
+# Next, we use the Get-WinEvent cmdlet with the -Path parameter to specify the log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx". We then filter the event logs to retrieve only the ones that have Event ID 55.
 
-We then iterate through each event log and create a custom object that contains the properties TimeCreated, ID, and Message. We store these objects in the $eventObjects array.
+# We then iterate through each event log and create a custom object that contains the properties TimeCreated, ID, and Message. We store these objects in the $eventObjects array.
 
-We save the event details to a text file and a CSV file using the Out-File cmdlet and the Export-Csv cmdlet, respectively. The output files are saved in the "C:\temp" directory.
+# We save the event details to a text file and a CSV file using the Out-File cmdlet and the Export-Csv cmdlet, respectively. The output files are saved in the "C:\temp" directory.
 
-Finally, we display a message indicating the completion of the search and the location of the output files.
+# Finally, we display a message indicating the completion of the search and the location of the output files.
 
-Save this script with a .ps1 file extension (e.g., search_EventID55.ps1) and execute it in a PowerShell environment by running .\search_EventID55.ps1. The script will first check if the "C:\temp" directory exists, create it if necessary, then search for Event ID 55 within the specified log file, and create a text file named "EventID55Matches.txt" and a CSV file named "EventID55Matches.csv" in the "C:\temp" directory with all the matches found.
+# Save this script with a .ps1 file extension (e.g., search_EventID55.ps1) and execute it in a PowerShell environment by running .\search_EventID55.ps1. The script will first check if the "C:\temp" directory exists, create it if necessary, then search for Event ID 55 within the specified log file, and create a text file named "EventID55Matches.txt" and a CSV file named "EventID55Matches.csv" in the "C:\temp" directory with all the matches found.
 
 

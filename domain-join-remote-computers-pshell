@@ -1,0 +1,35 @@
+$domain = "yourdomain.com"
+$adminUser = "administrator"
+$adminPassword = "password"
+
+# Path to the file containing the list of remote computers
+$computerListPath = "C:\temp\computer_list.txt"
+
+# Read the computer names from the file
+$computerNames = Get-Content -Path $computerListPath
+
+# Loop through each computer name and join it to the domain
+foreach ($computerName in $computerNames) {
+    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($adminUser, (ConvertTo-SecureString -String $adminPassword -AsPlainText -Force))
+    $joinOptions = @{
+        'Credential' = $credential
+        'ComputerName' = $computerName
+        'DomainName' = $domain
+        'Restart' = $true
+        'Force' = $true
+        'ErrorAction' = 'Stop'
+    }
+
+    try {
+        Add-Computer @joinOptions
+        Write-Host "Successfully joined $computerName to the domain."
+    } catch {
+        Write-Host "Failed to join $computerName to the domain. Error: $_" -ForegroundColor Red
+    }
+}
+
+
+
+Make sure to replace 'yourdomain.com', 'administrator', and 'password' with your actual domain information and administrator credentials. Also, ensure that the list of computer names is stored in a text file at 'C:\temp\computer_list.txt', with each computer name on a new line.
+
+When you run this script, it will attempt to join each remote computer to the specified domain using the provided administrator credentials. It will also restart the computers after joining the domain. The script will display success or failure messages for each computer.

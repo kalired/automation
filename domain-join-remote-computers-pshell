@@ -30,6 +30,6 @@ foreach ($computerName in $computerNames) {
 
 
 
-Make sure to replace 'yourdomain.com', 'administrator', and 'password' with your actual domain information and administrator credentials. Also, ensure that the list of computer names is stored in a text file at 'C:\temp\computer_list.txt', with each computer name on a new line.
+# Make sure to replace 'yourdomain.com', 'administrator', and 'password' with your actual domain information and administrator credentials. Also, ensure that the list of computer names is stored in a text file at 'C:\temp\computer_list.txt', with each computer name on a new line.
 
-When you run this script, it will attempt to join each remote computer to the specified domain using the provided administrator credentials. It will also restart the computers after joining the domain. The script will display success or failure messages for each computer.
+# When you run this script, it will attempt to join each remote computer to the specified domain using the provided administrator credentials. It will also restart the computers after joining the domain. The script will display success or failure messages for each computer.

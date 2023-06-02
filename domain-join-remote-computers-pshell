@@ -1,35 +1,54 @@
+# Define the domain information
 $domain = "yourdomain.com"
-$adminUser = "administrator"
-$adminPassword = "password"
+$domainUser = "yourdomain\administrator"
+$encryptedPassword = "<encrypted_password_here>"
 
 # Path to the file containing the list of remote computers
 $computerListPath = "C:\temp\computer_list.txt"
 
+# Convert the encrypted password from base64
+$securePassword = [System.Text.Encoding]::UTF8.GetString([System.Convert]::FromBase64String($encryptedPassword))
+
 # Read the computer names from the file
 $computerNames = Get-Content -Path $computerListPath
 
-# Loop through each computer name and join it to the domain
+# Loop through each computer name and connect using local credentials
 foreach ($computerName in $computerNames) {
-    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($adminUser, (ConvertTo-SecureString -String $adminPassword -AsPlainText -Force))
-    $joinOptions = @{
-        'Credential' = $credential
-        'ComputerName' = $computerName
-        'DomainName' = $domain
-        'Restart' = $true
-        'Force' = $true
-        'ErrorAction' = 'Stop'
-    }
+    Write-Host "Connecting to $computerName using local credentials..."
+
+    # Create a credential object using local credentials
+    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:USERNAME, (ConvertTo-SecureString -String $env:USERPASSWORD -AsPlainText -Force)
 
     try {
-        Add-Computer @joinOptions
+        # Connect to the remote computer using local credentials
+        $session = New-PSSession -ComputerName $computerName -Credential $credential
+
+        Write-Host "Connected to $computerName."
+
+        # Invoke a script block on the remote session to join the machine to the domain and restart
+        Invoke-Command -Session $session -ScriptBlock {
+            param (
+                $domain,
+                $domainUser,
+                $securePassword
+            )
+
+            # Decrypt the secure password
+            $password = ConvertTo-SecureString -String $securePassword -Key (1..16)
+
+            # Join the machine to the domain
+            Add-Computer -DomainName $domain -Credential $domainUser -Restart -Force -PassThru -ErrorAction Stop
+
+        } -ArgumentList $domain, $domainUser, $securePassword
+
         Write-Host "Successfully joined $computerName to the domain."
+
     } catch {
-        Write-Host "Failed to join $computerName to the domain. Error: $_" -ForegroundColor Red
+        Write-Host "Failed to connect or join $computerName to the domain. Error: $_" -ForegroundColor Red
+    } finally {
+        # Close the session
+        if ($session) {
+            Remove-PSSession -Session $session
+        }
     }
 }
-
-
-
-# Make sure to replace 'yourdomain.com', 'administrator', and 'password' with your actual domain information and administrator credentials. Also, ensure that the list of computer names is stored in a text file at 'C:\temp\computer_list.txt', with each computer name on a new line.
-
-# When you run this script, it will attempt to join each remote computer to the specified domain using the provided administrator credentials. It will also restart the computers after joining the domain. The script will display success or failure messages for each computer.

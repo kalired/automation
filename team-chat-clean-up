@@ -1,0 +1,15 @@
+# Install and import the Microsoft Teams PowerShell module
+Install-Module -Name PowerShellGet -Force -AllowClobber
+Install-Module -Name MicrosoftTeams -Force -AllowClobber
+Import-Module -Name MicrosoftTeams
+
+# Connect to Microsoft Teams
+Connect-MicrosoftTeams
+
+# Get all chat conversations
+$chats = Get-TeamChat
+
+# Delete each chat conversation
+foreach ($chat in $chats) {
+    Remove-TeamChat -TeamChatId $chat.Id
+}

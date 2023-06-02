@@ -1,0 +1,33 @@
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+$outputCsvPath = "C:/temp/certificate_status.csv"
+
+$certificateStatus = foreach ($computer in $computers) {
+    $certs = Get-ChildItem -Path "Cert:\LocalMachine" -Recurse | Where-Object {
+        $_.NotAfter -lt (Get-Date) -or $_.Revoked
+    }
+
+    foreach ($cert in $certs) {
+        [PSCustomObject]@{
+            ComputerName = $computer
+            CertificateName = $cert.FriendlyName
+            Thumbprint = $cert.Thumbprint
+            NotAfter = $cert.NotAfter
+            Revoked = $cert.Revoked
+        }
+    }
+}
+
+$certificateStatus | Export-Csv -Path $outputCsvPath -NoTypeInformation
+
+Write-Host "Certificate status has been exported to $outputCsvPath."
+
+
+# Make sure to run this script on a computer with administrative privileges and with the Active Directory module imported (Import-Module ActiveDirectory) to use the Get-ADComputer cmdlet.
+
+# The script retrieves all computers from Active Directory using the Get-ADComputer cmdlet and iterates through each computer. For each computer, it searches for expired or revoked certificates using the Get-ChildItem cmdlet with the "Cert:\LocalMachine" certificate store path. It then filters the certificates based on their expiration date (NotAfter) and revocation status (Revoked).
+
+# The script creates a custom object for each matching certificate, including the computer name, certificate name, thumbprint, expiration date, and revocation status.
+
+# Finally, the script exports the certificate status to a CSV file located at "C:/temp/certificate_status.csv" using the Export-Csv cmdlet.
+
+# Please note that this script assumes you are using Active Directory and that the computers are reachable on the network. Additionally, it's important to have appropriate permissions to access the certificate stores on each computer.

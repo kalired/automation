@@ -32,4 +32,4 @@ Write-Host "Inactive accounts have been locked, moved to 'Inactive' group, and t
 
 
 
-Please make sure to replace "DC=contoso,DC=com" with the appropriate domain controller information for your environment. Also, ensure that the script is run with administrative privileges.
+# Please make sure to replace "DC=contoso,DC=com" with the appropriate domain controller information for your environment. Also, ensure that the script is run with administrative privileges.

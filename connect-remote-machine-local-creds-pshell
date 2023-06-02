@@ -1,0 +1,47 @@
+# Path to the file containing the list of remote machines
+$machineListPath = "C:\temp\machine_list.txt"
+
+# Path to the file containing the encrypted local credentials
+$encryptedCredentialsPath = "C:\temp\encrypted_credentials.txt"
+
+# Read the machine names from the file
+$machineNames = Get-Content -Path $machineListPath
+
+# Read the encrypted credentials from the file
+$encryptedCredentials = Get-Content -Path $encryptedCredentialsPath | ConvertTo-SecureString
+
+# Loop through each machine name and connect using encrypted local credentials
+foreach ($machineName in $machineNames) {
+    Write-Host "Connecting to $machineName using encrypted local credentials..."
+
+    # Create a credential object using the encrypted credentials
+    $credential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $env:USERNAME, $encryptedCredentials
+
+    try {
+        # Connect to the remote machine using encrypted local credentials
+        $session = New-PSSession -ComputerName $machineName -Credential $credential
+
+        Write-Host "Connected to $machineName."
+
+        # Execute commands on the remote machine
+        # Example: Get-Process -Session $session
+
+    } catch {
+        Write-Host "Failed to connect to $machineName. Error: $_" -ForegroundColor Red
+    } finally {
+        # Close the session
+        if ($session) {
+            Remove-PSSession -Session $session
+        }
+    }
+}
+
+
+
+# In the above script:
+
+# Replace "C:\temp\machine_list.txt" with the actual path to the file containing the list of remote machine names.
+# Replace "C:\temp\encrypted_credentials.txt" with the actual path to the file containing the encrypted local credentials.
+# Adjust the code within the try block to execute the desired commands on the remote machine.
+
+# Please ensure that you have the necessary permissions and appropriate encryption/decryption mechanism in place for managing the encrypted credentials file.

@@ -1,1 +1,35 @@
+# Search for inactive users and computers
+$inactiveDays = 180
+$inactiveUsers = Get-ADUser -Filter {LastLogonDate -lt (Get-Date).AddDays(-$inactiveDays)} -Properties LastLogonDate
+$inactiveComputers = Get-ADComputer -Filter {LastLogonDate -lt (Get-Date).AddDays(-$inactiveDays)} -Properties LastLogonDate
 
+# Create "Inactive" group if it doesn't exist
+$group = Get-ADGroup -Filter {Name -eq "Inactive"}
+if ($group -eq $null) {
+    $group = New-ADGroup -Name "Inactive" -GroupCategory Security -GroupScope Global -Path "OU=Groups,DC=contoso,DC=com"
+}
+
+# Lock accounts and move them to the "Inactive" group
+$inactiveUsers | ForEach-Object {
+    $_ | Set-ADUser -Enabled $false
+    $_ | Move-ADObject -TargetPath "CN=Inactive,OU=Groups,DC=contoso,DC=com"
+}
+
+$inactiveComputers | ForEach-Object {
+    $_ | Disable-ADAccount
+    $_ | Move-ADObject -TargetPath "CN=Inactive,OU=Groups,DC=contoso,DC=com"
+}
+
+# Export matches to CSV
+$matches = $inactiveUsers + $inactiveComputers
+$csvPath = "C:\temp\inactive_accounts.csv"
+$matches | Select-Object Name, SamAccountName, LastLogonDate, ObjectClass |
+    Export-Csv -Path $csvPath -NoTypeInformation
+
+Write-Host "Inactive accounts have been locked, moved to 'Inactive' group, and the matches have been exported to $csvPath."
+
+
+
+
+
+Please make sure to replace "DC=contoso,DC=com" with the appropriate domain controller information for your environment. Also, ensure that the script is run with administrative privileges.

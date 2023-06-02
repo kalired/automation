@@ -1,39 +1,66 @@
-Here's an updated version of the PowerShell script that uses Event Viewer to search for event ID 55 in the "Applications and Services Logs/Microsoft/Windows/UniversalTelemetryClient/Operational" log and creates a text file that lists all the occurrences of event ID 55:
+Here's a PowerShell script that first checks if the directory "C:\temp" exists. If it doesn't exist, it creates the directory. Then it searches for Event ID 55 within the specified log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx" and creates both a text file and a CSV file with all the matches found:
 
 
 
+################################################################################################################################################################################################################
 
 
+$eventID = 55
+$logFile = "$env:SystemRoot\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx"
+$outputTextFile = "C:\temp\EventID55Matches.txt"
+$outputCSVFile = "C:\temp\EventID55Matches.csv"
 
-$eventID = 55    # Event ID to search for
-$logName = "Applications and Services Logs/Microsoft/Windows/UniversalTelemetryClient/Operational"    # Log name to search
-$outputFile = "EventID55.txt"    # Output file name
+# Check if the directory exists, if not, create it
+if (-not (Test-Path -Path "C:\temp")) {
+    New-Item -Path "C:\temp" -ItemType Directory | Out-Null
+}
 
-# Get the event log
-$eventLog = Get-WinEvent -LogName $logName -FilterXPath "*[System/EventID=$eventID]"
+# Load the EventLog module
+Import-Module -Name "Microsoft.PowerShell.Diagnostics"
 
-# Create an empty string to store the event details
-$eventDetails = ""
+# Get the event logs matching Event ID 55 in the specified log file
+$eventLogs = Get-WinEvent -Path $logFile | Where-Object {$_.Id -eq $eventID}
 
-# Iterate through each event
-foreach ($event in $eventLog) {
-    $eventDetails += "TimeCreated: $($event.TimeCreated)`r`n"
-    $eventDetails += "ID: $($event.ID)`r`n"
-    $eventDetails += "Message: $($event.Message)`r`n"
-    $eventDetails += "----------------------`r`n"
+# Create an empty array to store the event objects
+$eventObjects = @()
+
+# Iterate through each event log
+foreach ($eventLog in $eventLogs) {
+    $eventObject = [PSCustomObject]@{
+        TimeCreated = $eventLog.TimeCreated
+        ID = $eventLog.Id
+        Message = $eventLog.Message
+    }
+
+    $eventObjects += $eventObject
 }
 
 # Save the event details to a text file
-$eventDetails | Out-File -FilePath $outputFile
+$eventObjects | Format-Table | Out-File -FilePath $outputTextFile
+
+# Save the event details to a CSV file
+$eventObjects | Export-Csv -Path $outputCSVFile -NoTypeInformation
+
+Write-Host "Search complete. Results have been saved to $outputTextFile and $outputCSVFile."
 
 
 
 
 
-In this updated script, the $outputFile variable is set to the desired name of the text file where the event details will be stored. Replace "EventID55.txt" with the actual file name you want to use.
+################################################################################################################################################################################################################
 
-The rest of the script remains the same as the previous version. It retrieves events from the specified log that match the given Event ID, iterates through each event, and concatenates the relevant details (timestamp, Event ID, and message) into a string variable.
 
-Finally, the event details are saved to the specified text file using the Out-File cmdlet.
 
-Save this script with a .ps1 file extension (e.g., search_eventID55.ps1) and execute it in a PowerShell environment by running .\search_eventID55.ps1. Make sure to adjust the Event ID, log name, and output file name according to your specific requirements.
+In this script, we first check if the directory "C:\temp" exists using the Test-Path cmdlet. If it doesn't exist, we create it using the New-Item cmdlet.
+
+Next, we use the Get-WinEvent cmdlet with the -Path parameter to specify the log file "%SystemRoot%\System32\Winevt\Logs\Microsoft-Windows-UniversalTelemetryClient%4Operational.evtx". We then filter the event logs to retrieve only the ones that have Event ID 55.
+
+We then iterate through each event log and create a custom object that contains the properties TimeCreated, ID, and Message. We store these objects in the $eventObjects array.
+
+We save the event details to a text file and a CSV file using the Out-File cmdlet and the Export-Csv cmdlet, respectively. The output files are saved in the "C:\temp" directory.
+
+Finally, we display a message indicating the completion of the search and the location of the output files.
+
+Save this script with a .ps1 file extension (e.g., search_EventID55.ps1) and execute it in a PowerShell environment by running .\search_EventID55.ps1. The script will first check if the "C:\temp" directory exists, create it if necessary, then search for Event ID 55 within the specified log file, and create a text file named "EventID55Matches.txt" and a CSV file named "EventID55Matches.csv" in the "C:\temp" directory with all the matches found.
+
+

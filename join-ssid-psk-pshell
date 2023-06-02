@@ -1,0 +1,46 @@
+$ssid = "YourSSID"      # Replace with your SSID
+$psk = "YourPSK"        # Replace with your PSK
+
+# Remove any existing wireless profiles for the specified SSID
+$existingProfiles = netsh wlan show profiles | Select-String -Pattern "All User Profile\s+:\s+($ssid)"
+$existingProfiles | ForEach-Object {
+    $profileName = $_.ToString() -replace "All User Profile\s+:\s+($ssid)", '$1'
+    netsh wlan delete profile name="$profileName"
+}
+
+# Create a new wireless profile for the specified SSID with the provided PSK
+$profileXml = @"
+<WLANProfile xmlns="http://www.microsoft.com/networking/WLAN/profile/v1">
+    <name>$ssid</name>
+    <SSIDConfig>
+        <SSID>
+            <name>$ssid</name>
+        </SSID>
+    </SSIDConfig>
+    <connectionType>ESS</connectionType>
+    <connectionMode>auto</connectionMode>
+    <MSM>
+        <security>
+            <authEncryption>
+                <authentication>WPA2PSK</authentication>
+                <encryption>AES</encryption>
+                <useOneX>false</useOneX>
+            </authEncryption>
+            <sharedKey>
+                <keyType>passPhrase</keyType>
+                <protected>false</protected>
+                <keyMaterial>$psk</keyMaterial>
+            </sharedKey>
+        </security>
+    </MSM>
+</WLANProfile>
+"@
+
+$profileXml | Out-File -FilePath "$env:TEMP\$ssid.xml" -Encoding ASCII
+
+# Connect to the specified SSID
+netsh wlan add profile filename="$env:TEMP\$ssid.xml"
+netsh wlan connect name="$ssid"
+
+# Cleanup - Delete the temporary profile file
+Remove-Item -Path "$env:TEMP\$ssid.xml"

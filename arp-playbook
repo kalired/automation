@@ -19,11 +19,11 @@
 
 
 
-In this playbook:
+# In this playbook:
 
-The hosts field specifies the group of switches defined in your inventory file that you want to target. Make sure you have the appropriate host entries and connectivity set up in your inventory file.
-The ios_command module is used to execute the show arp command on each switch. Adjust the module name according to the network platform you are using (e.g., nxos_command for Cisco Nexus switches).
-The register keyword stores the command output in the arp_output variable.
-The set_fact task uses the parse_kv filter to parse the ARP table output into a structured format. It converts the output into a list of dictionaries containing the ARP entries.
-The debug task is included to display the parsed ARP entries.
-Make sure you have Ansible installed and your inventory file properly configured with the necessary switch information. Adjust the playbook and inventory as per your specific network setup.
+# The hosts field specifies the group of switches defined in your inventory file that you want to target. Make sure you have the appropriate host entries and connectivity set up in your inventory file.
+# The ios_command module is used to execute the show arp command on each switch. Adjust the module name according to the network platform you are using (e.g., nxos_command for Cisco Nexus switches).
+# The register keyword stores the command output in the arp_output variable.
+# The set_fact task uses the parse_kv filter to parse the ARP table output into a structured format. It converts the output into a list of dictionaries containing the ARP entries.
+# The debug task is included to display the parsed ARP entries.
+# Make sure you have Ansible installed and your inventory file properly configured with the necessary switch information. Adjust the playbook and inventory as per your specific network setup.

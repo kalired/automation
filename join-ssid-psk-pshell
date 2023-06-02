@@ -44,3 +44,10 @@ netsh wlan connect name="$ssid"
 
 # Cleanup - Delete the temporary profile file
 Remove-Item -Path "$env:TEMP\$ssid.xml"
+
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+# The above code connects to a specific SSID with a provided PSK using PowerShell.
+# It removes any existing wireless profiles for the specified SSID, creates a new profile with the provided SSID and PSK, and connects to the SSID.
+# The temporary profile file is then deleted as part of the cleanup process.
+# Note that administrative privileges are typically required to run this script, and the Wi-Fi adapter must support the specified authentication and encryption methods.
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #

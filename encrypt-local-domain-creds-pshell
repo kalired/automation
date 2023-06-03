@@ -1,3 +1,12 @@
+$folderPath = "C:\temp\staging"
+
+if (-not (Test-Path -Path $folderPath)) {
+    New-Item -ItemType Directory -Path $folderPath -ErrorAction SilentlyContinue
+    Write-Host "Folder '$folderPath' created successfully."
+} else {
+    Write-Host "Folder '$folderPath' already exists."
+}
+
 # Encrypt and save credentials for a local computer user
 $localUsername = "LocalUser"
 $localPassword = ConvertTo-SecureString -String "LocalUserPassword" -AsPlainText -Force
@@ -11,6 +20,24 @@ $domainCredential = New-Object -TypeName System.Management.Automation.PSCredenti
 $domainCredential | Export-Clixml -Path "C:\temp\domain_credentials.xml"
 
 
+
+
+
+
+
+# snippet 1
+
+# In the script above:
+
+# The variable $folderPath is set to the desired folder path (C:\temp\staging in this case).
+# The Test-Path cmdlet is used to check if the folder exists.
+# If the folder does not exist (-not condition), the New-Item cmdlet is used to create the folder with the specified path using the -ItemType Directory parameter.
+# The -ErrorAction SilentlyContinue parameter is used to suppress any error messages if the folder already exists.
+# Appropriate output messages are displayed using the Write-Host cmdlet to indicate whether the folder was created or if it already exists.
+# You can customize the $folderPath variable to match the desired folder path you want to check and create if necessary.
+
+
+# snippet 2
 
 # In the script above:
 

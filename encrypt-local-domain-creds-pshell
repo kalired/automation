@@ -9,15 +9,15 @@ if (-not (Test-Path -Path $folderPath)) {
 
 # Encrypt and save credentials for a local computer user
 $localUsername = "LocalUser"
-$localPassword = ConvertTo-SecureString -String "LocalUserPassword" -AsPlainText -Force
+$localPassword = ConvertTo-SecureString -String "348234jk3l24j2394823904i23kl4j" -AsPlainText -Force
 $localCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $localUsername, $localPassword
-$localCredential | Export-Clixml -Path "C:\temp\local_credentials.xml"
+$localCredential | Export-Clixml -Path "C:\temp\staging\local_credentials.xml"
 
 # Encrypt and save credentials for a domain administrator
 $domainUsername = "DomainAdmin"
-$domainPassword = ConvertTo-SecureString -String "DomainAdminPassword" -AsPlainText -Force
+$domainPassword = ConvertTo-SecureString -String "38923048fjklsdjflksdjkf39" -AsPlainText -Force
 $domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainUsername, $domainPassword
-$domainCredential | Export-Clixml -Path "C:\temp\domain_credentials.xml"
+$domainCredential | Export-Clixml -Path "C:\temp\staging\domain_credentials.xml"
 
 
 

@@ -1,1 +1,25 @@
+# Encrypt and save credentials for a local computer user
+$localUsername = "LocalUser"
+$localPassword = ConvertTo-SecureString -String "LocalUserPassword" -AsPlainText -Force
+$localCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $localUsername, $localPassword
+$localCredential | Export-Clixml -Path "C:\temp\local_credentials.xml"
+
+# Encrypt and save credentials for a domain administrator
+$domainUsername = "DomainAdmin"
+$domainPassword = ConvertTo-SecureString -String "DomainAdminPassword" -AsPlainText -Force
+$domainCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainUsername, $domainPassword
+$domainCredential | Export-Clixml -Path "C:\temp\domain_credentials.xml"
+
+
+
+# In the script above:
+
+# The credentials for a local computer user are defined with the $localUsername and $localPassword variables.
+# The ConvertTo-SecureString cmdlet is used to convert the plain text password into a secure string.
+# The New-Object cmdlet is used to create a PSCredential object with the local username and the secure password.
+# The Export-Clixml cmdlet is used to export the local credentials as an encrypted XML file at the specified path ("C:\temp\local_credentials.xml" in the example).
+# Similarly, the credentials for a domain administrator are defined with the $domainUsername and $domainPassword variables, encrypted, and saved as an XML file ("C:\temp\domain_credentials.xml" in the example).
+# Make sure to replace the placeholder passwords with your desired passwords for the local user and domain administrator.
+
+# Remember to securely manage and protect the encrypted credentials files, as they contain sensitive information.
 

@@ -1,1 +1,27 @@
+# Prompt the user for a keypair value
+$keypairValue = Read-Host "Enter the keypair value"
+
+# Prompt the user for the target directory
+$targetDirectory = Read-Host "Enter the target directory"
+
+# Recursively search for files in the target directory
+$files = Get-ChildItem -Path $targetDirectory -File -Recurse
+
+# Iterate through each file
+foreach ($file in $files) {
+    $filePath = $file.FullName
+    $lineNumber = 0
+
+    # Read file line by line
+    foreach ($line in Get-Content -Path $filePath) {
+        $lineNumber++
+        # Search for matches against the key value in the current line
+        $matches = [regex]::Matches($line, "\b$keypairValue\b")
+
+        # Log the matches found with their file and line numbers
+        foreach ($match in $matches) {
+            Write-Host "Match found in file: $filePath, line: $lineNumber: $($match.Value)"
+        }
+    }
+}
 

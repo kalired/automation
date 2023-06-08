@@ -1,1 +1,29 @@
+import os
+import re
+
+# Prompt the user for a keypair value
+keypair_value = input("Enter the keypair value: ")
+
+# Prompt the user for the target directory
+target_directory = input("Enter the target directory: ")
+
+# Initialize line counter
+line_number = 0
+
+# Traverse through the target directory and its subdirectories
+for root, dirs, files in os.walk(target_directory):
+    for file_name in files:
+        file_path = os.path.join(root, file_name)
+        # Open each file
+        with open(file_path, 'r') as file:
+            line_number = 0
+            # Read file line by line
+            for line in file:
+                line_number += 1
+                # Search for matches against the key value in the current line
+                matches = re.findall(r'\b{}\b'.format(keypair_value), line)
+                # Log the matches found with their file and line numbers
+                if matches:
+                    for match in matches:
+                        print(f"Match found in file: {file_path}, line: {line_number}: {match}")
 

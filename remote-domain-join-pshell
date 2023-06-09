@@ -1,0 +1,40 @@
+# example of a PowerShell script that prompts the user for local credentials to access multiple remote computers, prompts for domain admin credentials to complete the domain join, and restarts each computer upon successful domain join:
+
+
+
+
+
+$computers = Read-Host -Prompt "Enter the names or IP addresses of the remote computers (separated by comma)"
+$computerNames = $computers -split "," | ForEach-Object { $_.Trim() }
+
+$localUsername = Read-Host -Prompt "Enter the local administrator username"
+$localPassword = Read-Host -Prompt "Enter the local administrator password" -AsSecureString
+$localCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $localUsername, $localPassword
+
+$domainAdminUsername = Read-Host -Prompt "Enter the domain administrator username"
+$domainAdminPassword = Read-Host -Prompt "Enter the domain administrator password" -AsSecureString
+$domainAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainAdminUsername, $domainAdminPassword
+
+foreach ($computerName in $computerNames) {
+    Write-Host "Joining $computerName to the domain..."
+
+    try {
+        Add-Computer -ComputerName $computerName -LocalCredential $localCredential -DomainCredential $domainAdminCredential -DomainName "YOUR_DOMAIN_NAME" -Restart -Force -ErrorAction Stop
+        Write-Host "$computerName successfully joined to the domain and restarted."
+    } catch {
+        Write-Host "Failed to join $computerName to the domain: $_"
+    }
+}
+
+
+
+
+
+# Before running the script, make sure to replace the following placeholders with the appropriate values:
+
+# YOUR_DOMAIN_NAME: Replace this with the name of your domain.
+# The script prompts the user to enter the names or IP addresses of the remote computers separated by commas. It then prompts for the local administrator username and password to access the remote machines, and the domain administrator username and password to complete the domain join.
+
+# The script uses a foreach loop to iterate over each computer name entered by the user. Inside the loop, it attempts to join the computer to the domain using the Add-Computer cmdlet. The -LocalCredential parameter is used to provide the local administrator credentials for accessing the remote computer, and the -DomainCredential parameter is used to provide the domain administrator credentials for the join operation. The -DomainName parameter specifies the domain to join. The -Restart parameter restarts the computer after a successful domain join. If an error occurs during the join process, it is caught and an error message is displayed.
+
+# Please ensure you have appropriate permissions and network connectivity to the remote computers and the domain controller. Also, exercise caution when handling and storing passwords.

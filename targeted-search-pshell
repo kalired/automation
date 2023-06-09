@@ -1,0 +1,26 @@
+# Prompt the user for a value
+$searchValue = Read-Host "Enter the value"
+
+# Prompt the user for a directory
+$directory = Read-Host "Enter the directory"
+
+# Recursively search for files in the directory
+$files = Get-ChildItem -Path $directory -File -Recurse
+
+# Iterate through each file
+foreach ($file in $files) {
+    $filePath = $file.FullName
+
+    # Read the content of the file
+    $content = Get-Content -Path $filePath -Raw
+
+    # Search for matches against the value in the file content
+    $matches = [regex]::Matches($content, [regex]::Escape($searchValue))
+
+    # Log the matches found with the filename
+    foreach ($match in $matches) {
+        Write-Host "Match found in file: $filePath - Match: $($match.Value)"
+    }
+}
+
+

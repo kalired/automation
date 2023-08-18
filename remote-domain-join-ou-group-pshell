@@ -9,7 +9,7 @@ $domainAdminUsername = Read-Host -Prompt "Enter the domain administrator usernam
 $domainAdminPassword = Read-Host -Prompt "Enter the domain administrator password" -AsSecureString
 $domainAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainAdminUsername, $domainAdminPassword
 
-$ou = "OU=BFUSA,OU=BAMM,DC=BFUSA,DC=com"
+$ou = "OU=BFUSA,OU=BAMM,DC=bfusa,DC=com"
 $group = Read-Host -Prompt "Enter the group for the AD join machine"
 
 foreach ($computerName in $computerNames) {

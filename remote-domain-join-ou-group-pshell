@@ -1,0 +1,25 @@
+$computers = Read-Host -Prompt "Enter the names or IP addresses of the remote computers (separated by comma)"
+$computerNames = $computers -split "," | ForEach-Object { $_.Trim() }
+
+$localUsername = Read-Host -Prompt "Enter the local administrator username"
+$localPassword = Read-Host -Prompt "Enter the local administrator password" -AsSecureString
+$localCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $localUsername, $localPassword
+
+$domainAdminUsername = Read-Host -Prompt "Enter the domain administrator username"
+$domainAdminPassword = Read-Host -Prompt "Enter the domain administrator password" -AsSecureString
+$domainAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainAdminUsername, $domainAdminPassword
+
+$ou = Read-Host -Prompt "Enter the OU for the AD joined machine"
+$group = Read-Host -Prompt "Enter the group for the AD joined machine"
+
+foreach ($computerName in $computerNames) {
+    Write-Host "Joining $computerName to the domain..."
+
+    try {
+        Add-Computer -ComputerName $computerName -LocalCredential $localCredential -DomainCredential $domainAdminCredential -DomainName "YOUR_DOMAIN_NAME" -Restart -Force -ErrorAction Stop
+        Set-ADComputer -Identity $computerName -OUPath $ou -AddMember $group
+        Write-Host "$computerName successfully joined to the domain and restarted."
+    } catch {
+        Write-Host "Failed to join $computerName to the domain: $_"
+    }
+}

@@ -9,14 +9,14 @@ $domainAdminUsername = Read-Host -Prompt "Enter the domain administrator usernam
 $domainAdminPassword = Read-Host -Prompt "Enter the domain administrator password" -AsSecureString
 $domainAdminCredential = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList $domainAdminUsername, $domainAdminPassword
 
-$ou = "OU=BAMM,OU=BFUSA,DC=bfusa,DC=com"
+$ou = "OU=X,OU=X,DC=X,DC=com"
 $group = Read-Host -Prompt "Enter the group for the AD join machine"
 
 foreach ($computerName in $computerNames) {
     Write-Host "Joining $computerName to the domain..."
 
     try {
-        Add-Computer -ComputerName $computerName -LocalCredential $localCredential -DomainCredential $domainAdminCredential -DomainName "BFUSA" -Restart -Force -ErrorAction Stop
+        Add-Computer -ComputerName $computerName -LocalCredential $localCredential -DomainCredential $domainAdminCredential -DomainName "XYZ" -Restart -Force -ErrorAction Stop
         Set-ADComputer -Identity $computerName -OUPath $ou -AddMember $group
         Write-Host "$computerName successfully joined to the domain and restarted."
     } catch {
